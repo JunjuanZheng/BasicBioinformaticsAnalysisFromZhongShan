@@ -1,0 +1,70 @@
+---
+title: "lucky: enhanced common visualization and analysis tool for medicine researchers"
+author: "Weibin Huang \\
+         
+         The First Affiliated Hospital,Sun Yat-sen University"
+date: "`r Sys.Date()`"
+output: 
+  prettydoc::html_pretty:
+    toc: true
+    theme: cayman
+    highlight: github
+  pdf_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+
+# WGCNA series
+
+## FastWGCNA
+FastWGCNA would do a standard WGCNA for given normalized matrix and design object.
+```{r,warning=FALSE,message=FALSE}
+## data prepration
+library(lucky)
+data("rna.fpkm")
+data("rna.design")
+
+## WGCNA with no local check.Select first 3000 genes into WGCNA
+wgcna <- FastWGCNA(expr.matrix = rna.fpkm,
+                   design = rna.design,
+                   log.convert = T,
+                   check = F,
+                   contrast.col = "N.status",
+                   contrast.control = "N0",
+                   mad.portion = 3000,
+                   maxBlockSize = 5000,
+                   cutoff.pval = 0.05,
+                   corType = "pearson",
+                   hub_cutoffSigGM=0.15,
+                   hub_MM = 0.8,
+                   hub_WeightedQ = 0.05,
+                   report = F,
+                   save.path = "WGCNA-test",
+                   names = "love")
+```
+
+
+```{r,fig.show = "hold"}
+## explore Module-Trait relationship in uni-/multi-dataset
+
+
+
+
+
+
+
+
+
+```
+
+
+
+

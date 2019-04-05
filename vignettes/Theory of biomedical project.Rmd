@@ -1,0 +1,42 @@
+---
+title: "Theory of biomedical project"
+author: "Weibin Huang \\
+         
+         The First Affiliated Hospital,Sun Yat-sen University"
+date: "`r Sys.Date()`"
+output: 
+  prettydoc::html_pretty:
+    toc: true
+    theme: cayman
+    highlight: github
+  pdf_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Theory of biomedical project}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# 基本文件夹架构
+## 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
