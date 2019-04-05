@@ -34,6 +34,26 @@ reverse = c(DSCR8="GGTCCAGGCTCCTTCATTTTTG",
             DSCR8 = "GGTCCAGGCTCCTTCATTTTTG")
 res <- testPrimer(forward,reverse)
 
+library(lucky)
+forward = c(FASN = "ACAGCGGGGAATGGGTACT",
+            SCD = "TCATAATTCCCGACGTGGCT",
+            PPARG = "GGGATCAGCTCCGTGGATCT",
+            ACACA = "TCACACCTGAAGACCTTAAAGCC",
+            ACTB = "CATGTACGTTGCTATCCAGGC",
+            TNF = "TGGCGTGGAGCTGAGAGATA",
+            IL6 = "GAGTAGTGAGGAACAAGCCAGA",
+            PCK1 = "AAGGTGGGGACGTTCAGAATC",
+            G6PC = "CACTTCCGTGCCCCTGATAA")
+reverse = c(FASN = "GACTGGTACAACGAGCGGAT",
+            SCD = "CCCAGAAATACCAGGGCACA",
+            PPARG = "TGCACTTTGGTACTCTTGAAGTT",
+            ACACA = "AGCCCACACTGCTTGTACTG",
+            ACTB = "CTCCTTAATGTCACGCACGAT",
+            TNF = "TGATGGCAGAGAGGAGGTTG",
+            IL6 = "AAGCTGCGCAGAATGAGATGA",
+            PCK1 = "ATGGTTCCCTGCCTCATTCC",
+            G6PC = "TAGTATACACCTGCTGTGCCC")
+res <- testPrimer(forward,reverse)
 }
 \seealso{
 \code{\link[Biostrings]{XStringSet-io}};\code{\link[XVector]{XVector-class}};\code{\link[Biostrings]{matchPattern}};\code{\link{testPrimer1}}

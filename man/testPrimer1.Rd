@@ -29,10 +29,10 @@ reverse = "TGAGCCAGCCTTCATTTTCCA"
 path.transcipt.fa = "E:/iProjects/XYJ.lnc/constant/Homo_sapiens_DSCR8_cDNA.fa"
 path.exon.fa = "E:/iProjects/XYJ.lnc/constant/Homo_sapiens_DSCR8_Exons.fa"
 
-res <- testPrimer(forward,
-                  reverse,
-                  path.transcipt.fa,
-                  path.exon.fa)
+res <- testPrimer1(forward,
+                   reverse,
+                   path.transcript.fa,
+                   path.exon.fa)
 ## see result
 names(res$Data$Amplication)
 res$Data$CrossExons
