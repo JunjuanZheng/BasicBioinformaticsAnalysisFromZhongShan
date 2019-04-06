@@ -2,7 +2,7 @@
 % Please edit documentation in R/Anno_AnnotateJournal.R
 \name{AnnotateJournal}
 \alias{AnnotateJournal}
-\title{annotate journal via letpub}
+\title{Annotate journal id via crawler}
 \usage{
 AnnotateJournal(journal.id = 1:13000, source = "letpub", report = T)
 }
@@ -16,9 +16,15 @@ AnnotateJournal(journal.id = 1:13000, source = "letpub", report = T)
 \description{
 AnnotateJournal help annotate journal id via letpub website.AnnotateJournal is more powerful than get.ISSN series and is recommanded to get information of journals like ISSN or IF.
 }
+\details{
+The meaning of results from \code{AnnoteJournal} is as following: \cr journal.id: the ids of journals in letpub\cr journals:the names of journals\cr abbr: the abbreviation of journal names \cr issn:the ISSN code of journals \cr IF: the impact factor of journals \cr IF5: the merge impact factor of journals in recent 5 years \cr selfcited: self-cited ratio \cr website: the website of the journal \cr OA: whether a OA journal \cr research: the research direction \cr area: the area of the journal like "USA" \cr regular: the period of article checking \cr BasicSubject: the basic subject of the journal \cr SecondSubject: the second subject of the journal \cr TopJournal: whether a top journal \cr ReviewJournal: whether a review journal \cr speed: the speed of article checking \cr recieve: the ratio of article recieved
+}
 \examples{
 AnnotateJournal(journal.id=1:13000,
                 source = "letpub")
+}
+\seealso{
+\code{\link{MakeENlist}}
 }
 \author{
 Weibin Huang<\email{654751191@qq.com}>

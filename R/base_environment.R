@@ -26,15 +26,12 @@ mymusic <- function(n=1,path=NULL){
   if(length(music.list)==0){
     # 在给定的地址中未找到音频文件。
     library(tuneR)
-    music <- tuneR::bind(sine(440), sine(220))
-    tuneR::play(music)
-    #print("未找到音频，自动生成一个简单音频。")
+    w <- system.file("extdata", "wind 00_00_04-00_00_28.m4a", package = "lucky")
+    tuneR::play(w)
   } else {
     # 可以找到文件
-    #print(paste0("一共有",length(music.list),"个音频文件。"))
     music <- music.list[n];
     tuneR::play(music)
-    #print(paste0("选择了第",select,"个音频文件。"))
   }
 }
 

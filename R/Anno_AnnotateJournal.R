@@ -1,47 +1,24 @@
 
 
 ####=====================Annotate.Journal=====================####
-
-#annotate journal via letpub
-
-## AnnotateJournal help annotate journal id via letpub website.AnnotateJournal is more powerful than get.ISSN series and is recommanded to get information of journals like ISSN or IF.
-
-## value
-#journal.id# the ids of journals in letpub
-#journals#the names of journals
-#abbr#the abbreviation of journal names
-#issn#the ISSN code of journals
-#IF#the impact factor of journals
-#IF5#the merge impact factor of journals in recent 5 years
-#selfcited#self-cited ratio
-#website#the website of the journal
-#OA#whether a OA journal
-#research#the research direction
-#area#the area of the journal lik USA
-#regular#the period of article checking
-#BasicSubject#the basic subject of the journal
-#SecondSubject#the second subject of the journal
-#TopJournal#whether a top journal
-#ReviewJournal#whether a review journal
-#speed#the speed of article checking
-#recieve#the ratio of article recieved
-#' @title annotate journal via letpub
+#' @title Annotate journal id via crawler
 #' @description AnnotateJournal help annotate journal id via letpub website.AnnotateJournal is more powerful than get.ISSN series and is recommanded to get information of journals like ISSN or IF.
 #' @keywords AnnotateJournal
 #' @param journal.id a vector of journal id
 #' @param source the data source.Default is letpub.
 #' @param report whether report working information
+#' @details The meaning of results from \code{AnnoteJournal} is as following: \cr journal.id: the ids of journals in letpub\cr journals:the names of journals\cr abbr: the abbreviation of journal names \cr issn:the ISSN code of journals \cr IF: the impact factor of journals \cr IF5: the merge impact factor of journals in recent 5 years \cr selfcited: self-cited ratio \cr website: the website of the journal \cr OA: whether a OA journal \cr research: the research direction \cr area: the area of the journal like "USA" \cr regular: the period of article checking \cr BasicSubject: the basic subject of the journal \cr SecondSubject: the second subject of the journal \cr TopJournal: whether a top journal \cr ReviewJournal: whether a review journal \cr speed: the speed of article checking \cr recieve: the ratio of article recieved
 #' @author Weibin Huang<\email{654751191@@qq.com}>
+#' @seealso \code{\link{MakeENlist}}
 #' @examples
 #' AnnotateJournal(journal.id=1:13000,
 #'                 source = "letpub")
 #' @export
-AnnotateJournal<- function(journal.id=1:13000,
+AnnotateJournal <- function(journal.id=1:13000,
                            source = "letpub",
                            report = T){
 
   ##加载必要的包
-  ## 加载必要包
   need <- c("rvest","stringr","plyr")
   Plus.library(need)
 
@@ -49,6 +26,8 @@ AnnotateJournal<- function(journal.id=1:13000,
   ano1 <- function(journal.id,
                    source = "letpub",
                    report = T){
+    # journal.id = 2
+
     ## source
     if(source == "letpub"){
       #构建url
@@ -86,7 +65,7 @@ AnnotateJournal<- function(journal.id=1:13000,
 
         ## IF
         IF <- text
-        p1 <- grep("最新影响因子",IF)[1]
+        p1 <- grep("最新IF",IF)[1] #p1 <- grep("最新影响因子",IF)
         p2 <- str_detect(IF,"[0-9][.][0-9]{3}\\b|[0-9]{2}[.][0-9]{3}\\b|[0-9]{3}[.][0-9]{3}\\b")
         p2 <- grep(T,p2)
         if((p1+1) %in% p2){
@@ -99,7 +78,7 @@ AnnotateJournal<- function(journal.id=1:13000,
 
         #五年影响因子
         IF5 <- text
-        p1 <- grep("五年影响因子",IF5)+1
+        p1 <- grep("五年IF",IF5)+1 #p1 <- grep("五年影响因子",IF5)+1
         IF5 <- IF5[p1];IF5
 
         ## 自引率
@@ -107,6 +86,24 @@ AnnotateJournal<- function(journal.id=1:13000,
         p1 <- grep("自引率",selfuse)
         selfuse <- selfuse[p1+1]
         selfuse <- selfuse[grep("%",selfuse)[1]];selfuse
+
+        ## h-index
+        h_index <- text
+        p1 <- grep("h-index",h_index)
+        h_index <- h_index[p1+1];h_index
+
+        ## cite score
+        cite_score <- text
+        p1 <- grep("CiteScore", cite_score)
+        cite.score <- cite_score[p1[1]+1]
+        cite.score1 <- Fastextra(cite.score,"CiteScore排名",2)
+        cite.score2 <- Fastextra(cite.score1,"学科排名百分位")
+        score <- str_extract(cite.score2[1],"[0-9]{1,6}[.][0-9]{1,6}")
+        q4 <- Fastextra(cite.score2[1],score,2)
+        rank <- str_extract(cite.score2[2],"[0-9]{1,6}[ ][/][ ][0-9]{1,6}")
+        superior <- Fastextra(Fastextra(cite.score2[2],"小类：",1),"大类：")[2]
+        inferior <- Fastextra(Fastextra(cite.score2[2],rank,1),"小类：")[2]
+
 
         ## 期刊官方网站
         http <- text
@@ -166,11 +163,21 @@ AnnotateJournal<- function(journal.id=1:13000,
         }
         recieve
 
+        ## 防止无值产生
+        real <- function(x) {
+          if(length(x)==0){
+            x <- NA
+          } else {
+            x <- x
+          }
+          return(x)
+        }
+
 
         ## 组合成数据框
         if(length(title)==0|is.na(title)){
           #title不存在，即没有对应编号的杂志
-          print(paste0("Error State:Not Such ID:",journal.id,"!"))
+          LuckyVerbose(paste0("Error State:Not Such ID:",journal.id,"!"))
           df1 <- data.frame(
             journal.id=journal.id,
             journals="NOT SUCH ID",
@@ -193,40 +200,52 @@ AnnotateJournal<- function(journal.id=1:13000,
           )
         } else {
           if(report==T){
-            print(paste0("ID",journal.id,"_",title))
+            LuckyVerbose(paste0("ID",journal.id,"_",title))
           }
           df1 <- data.frame(
-            journal.id=journal.id,
-            journals=title,
-            abbr = subtitle,
-            issn = issn,
-            IF = IF,
-            IF5 = IF5,
-            selfcited = selfuse,
-            website = http,
-            OA = oa,
-            research = r,
-            area  = area ,
-            regular = regular,
-            BasicSubject = category.status[1],
-            SecondSubject = category.status[2],
-            TopJournal = category.status[3],
-            ReviewJournal = category.status[4],
-            speed = speed,
-            recieve = recieve
+            journal.id=real(journal.id),
+            journals=real(title),
+            abbr = real(subtitle),
+            issn = real(issn),
+            IF = real(IF),
+            IF5 = real(IF5),
+            selfcited = real(selfuse),
+            h.index = real(h_index),
+            CiteScore = real(score),
+            disciplinary.quartile = real(q4),
+            CiteScore.rank = real(rank),
+            superior = real(superior),
+            inferior = real(inferior),
+            website = real(http),
+            OA = real(oa),
+            research = real(r),
+            area  = real(area) ,
+            regular = real(regular),
+            BasicSubject = real(category.status[1]),
+            SecondSubject = real(category.status[2]),
+            TopJournal = real(category.status[3]),
+            ReviewJournal = real(category.status[4]),
+            speed = real(speed),
+            recieve = real(recieve)
           )
         }
 
       } else {
-        print(a[["message"]])
+        LuckyVerbose(a[["message"]])
         df1 <- data.frame(
-          journal.id=journal.id,
+          journal.id=real(journal.id),
           journals="Error",
           abbr = "Error",
           issn = "Error",
           IF = "Error",
           IF5 = "Error",
           selfcited = "Error",
+          h.index = "Error",
+          CiteScore = "Error",
+          disciplinary.quartile = "Error",
+          CiteScore.rank = "Error",
+          superior = "Error",
+          inferior = "Error",
           website = "Error",
           OA = "Error",
           research = "Error",
@@ -243,13 +262,19 @@ AnnotateJournal<- function(journal.id=1:13000,
       }
     } else {
       df1 <- data.frame(
-        journal.id=journal.id,
+        journal.id=real(journal.id),
         journals="Error",
         abbr = "Error",
         issn = "Error",
         IF = "Error",
         IF5 = "Error",
         selfcited = "Error",
+        h.index = "Error",
+        CiteScore = "Error",
+        disciplinary.quartile = "Error",
+        CiteScore.rank = "Error",
+        superior = "Error",
+        inferior = "Error",
         website = "Error",
         OA = "Error",
         research = "Error",
@@ -262,7 +287,7 @@ AnnotateJournal<- function(journal.id=1:13000,
         speed = "Error",
         recieve = "Error"
       )
-      print("Error:Not Available source!")
+      LuckyVerbose("Error:Not Available source!")
     }
     return(df1)
   }
@@ -271,9 +296,10 @@ AnnotateJournal<- function(journal.id=1:13000,
   ##多个id同时提取
   df1 <- adply(as.matrix(journal.id),1,ano)
   df1 <- df1[,-1]
+  colnames(df1)[match("journal.id",colnames(df1))] <- paste0(source,"id")
 
   ##输出结果
-  if(report == T){print("All done!")}
+  if(report == T){LuckyVerbose("All done!")}
   return(df1)
 }
 
@@ -350,7 +376,7 @@ MakeENlist <- function(data = journals,
   ## output
   df <- cbind(fullnames,fu.abbr,fn.if,fn.issn)
   write.table(df,paste0(names,"_Endnote.Journals.List.txt"),sep = "\t",row.names = F,col.names = F,quote = F)
-  print("Files have been saved!")
+  LuckyVerbose("Files have been saved!")
 
   ## End
 }
