@@ -22,6 +22,16 @@ AnnotateJournal <- function(journal.id=1:13000,
   need <- c("rvest","stringr","plyr")
   Plus.library(need)
 
+  ## 防止无值产生
+  real <- function(x) {
+    if(length(x)==0){
+      x <- NA
+    } else {
+      x <- x
+    }
+    return(x)
+  }
+
   ##提取一个id的函数
   ano1 <- function(journal.id,
                    source = "letpub",
@@ -90,7 +100,7 @@ AnnotateJournal <- function(journal.id=1:13000,
         ## h-index
         h_index <- text
         p1 <- grep("h-index",h_index)
-        h_index <- h_index[p1+1];h_index
+        h_index <- h_index[p1+1][1];h_index
 
         ## cite score
         cite_score <- text
@@ -98,11 +108,11 @@ AnnotateJournal <- function(journal.id=1:13000,
         cite.score <- cite_score[p1[1]+1]
         cite.score1 <- Fastextra(cite.score,"CiteScore排名",2)
         cite.score2 <- Fastextra(cite.score1,"学科排名百分位")
-        score <- str_extract(cite.score2[1],"[0-9]{1,6}[.][0-9]{1,6}")
-        q4 <- Fastextra(cite.score2[1],score,2)
-        rank <- str_extract(cite.score2[2],"[0-9]{1,6}[ ][/][ ][0-9]{1,6}")
-        superior <- Fastextra(Fastextra(cite.score2[2],"小类：",1),"大类：")[2]
-        inferior <- Fastextra(Fastextra(cite.score2[2],rank,1),"小类：")[2]
+        score <- str_extract(cite.score2[1],"[0-9]{1,6}[.][0-9]{1,6}");score
+        q4 <- Fastextra(cite.score2[1],score,2);q4
+        rank <- str_extract(cite.score2[2],"[0-9]{1,6}[ ][/][ ][0-9]{1,6}");rank
+        superior <- Fastextra(Fastextra(cite.score2[2],"小类：",1),"大类：")[2];superior
+        inferior <- Fastextra(Fastextra(cite.score2[2],rank,1),"小类：")[2];inferior
 
 
         ## 期刊官方网站
@@ -129,6 +139,12 @@ AnnotateJournal <- function(journal.id=1:13000,
         regular <- text
         p1 <- grep("出版周期",regular)
         regular <- regular[p1+1][1];regular
+
+        ##年文章数
+        yearpublish <- text
+        p1 <- grep("年文章数",yearpublish)
+        yearpublish <- yearpublish[p1+1][2];yearpublish
+
 
         ## 中科院SCI期刊分区:"大类学科" "小类学科" "Top期刊"  "综述期刊"
         category.status <- md %>%
@@ -163,17 +179,6 @@ AnnotateJournal <- function(journal.id=1:13000,
         }
         recieve
 
-        ## 防止无值产生
-        real <- function(x) {
-          if(length(x)==0){
-            x <- NA
-          } else {
-            x <- x
-          }
-          return(x)
-        }
-
-
         ## 组合成数据框
         if(length(title)==0|is.na(title)){
           #title不存在，即没有对应编号的杂志
@@ -186,15 +191,22 @@ AnnotateJournal <- function(journal.id=1:13000,
             IF = "NOT SUCH ID",
             IF5 = "NOT SUCH ID",
             selfcited = "NOT SUCH ID",
+            h.index = "NOT SUCH ID",
+            CiteScore = "NOT SUCH ID",
+            disciplinary.quartile = "NOT SUCH ID",
+            CiteScore.rank = "NOT SUCH ID",
+            superior = "NOT SUCH ID",
+            inferior = "NOT SUCH ID",
             website = "NOT SUCH ID",
             OA = "NOT SUCH ID",
             research = "NOT SUCH ID",
             area  = "NOT SUCH ID" ,
             regular = "NOT SUCH ID",
+            yearpublish = "NOT SUCH ID",
             BasicSubject = "NOT SUCH ID",
             SecondSubject = "NOT SUCH ID",
             TopJournal = "NOT SUCH ID",
-            ReviewJournal = "NOT SUCH ID",
+            # ReviewJournal = "NOT SUCH ID",
             speed = "NOT SUCH ID",
             recieve = "NOT SUCH ID"
           )
@@ -221,10 +233,11 @@ AnnotateJournal <- function(journal.id=1:13000,
             research = real(r),
             area  = real(area) ,
             regular = real(regular),
+            yearpublish = real(yearpublish),
             BasicSubject = real(category.status[1]),
             SecondSubject = real(category.status[2]),
             TopJournal = real(category.status[3]),
-            ReviewJournal = real(category.status[4]),
+           # ReviewJournal = real(category.status[4]),
             speed = real(speed),
             recieve = real(recieve)
           )
@@ -251,10 +264,11 @@ AnnotateJournal <- function(journal.id=1:13000,
           research = "Error",
           area  = "Error" ,
           regular = "Error",
+          yearpublish = "Error",
           BasicSubject = "Error",
           SecondSubject = "Error",
           TopJournal = "Error",
-          ReviewJournal = "Error",
+          #ReviewJournal = "Error",
           speed = "Error",
           recieve = "Error"
         )
@@ -280,10 +294,11 @@ AnnotateJournal <- function(journal.id=1:13000,
         research = "Error",
         area  = "Error" ,
         regular = "Error",
+        yearpublish = "Error",
         BasicSubject = "Error",
         SecondSubject = "Error",
         TopJournal = "Error",
-        ReviewJournal = "Error",
+        #ReviewJournal = "Error",
         speed = "Error",
         recieve = "Error"
       )
