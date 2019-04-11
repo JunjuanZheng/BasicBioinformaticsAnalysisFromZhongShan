@@ -5,8 +5,8 @@
 \title{Version control for TCGA TNM stage}
 \usage{
 CorrectTNM(data, version = "stageVesion", toVersion = 8,
-  T.status = "pT", Np.counts = "Np.count", M.status = "M.status",
-  correctFile = NULL)
+  T.status = "pT", N.status = "pN", M.status = "M.status",
+  Np.counts = "Np.count", correctFile = NULL)
 }
 \arguments{
 \item{data}{design object}
@@ -17,9 +17,11 @@ CorrectTNM(data, version = "stageVesion", toVersion = 8,
 
 \item{T.status}{the colnames of T stage}
 
-\item{Np.counts}{the colnames of positive lymph nodes}
+\item{N.status}{the colnames of N stage}
 
 \item{M.status}{the colnames of M stage}
+
+\item{Np.counts}{the colnames of positive lymph nodes}
 
 \item{correctFile}{the path of reference database.Default = \code{system.file("extdata", "STAD_AJCC stage.xlsx", package = "lucky")}.It supports self-defined dataset with same format.}
 }
