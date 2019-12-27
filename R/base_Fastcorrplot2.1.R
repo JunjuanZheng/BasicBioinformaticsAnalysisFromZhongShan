@@ -13,7 +13,7 @@
 # savefile=T #Whether to save a PDF plot.
 # names # part of PDF file name.
 # other parameters# see corrplot::corrplot().
-
+# return 一张涉及到显著变量的相关性的图片以及control.marks和target显著相关的互作对，包括p值和相关系数
 Fastcorrplot2.1 <- function(data,
                           transposition = T,#是否转置矩阵
                           control.markers,
@@ -74,9 +74,9 @@ Fastcorrplot2.1 <- function(data,
                       adjust = "none",
                       use = "complete",
                       method = method);cor.t1
-  p.matrix <- cor.t1$p
-  p.matrix1 <- ifelse(p.matrix < p.cut.off,T,F)
-
+  p.matrix <- cor.t1$p #相关系数的显著性P值矩阵
+  p.matrix1 <- ifelse(p.matrix < p.cut.off,T,F) 
+  p.matrix2 <- cor.t1$r #相关系数矩阵
   ## 获得对应的长型数据
   getlong <- function(matrix){
     p.list <- list()
@@ -94,15 +94,18 @@ Fastcorrplot2.1 <- function(data,
   }
   p.long1 <- getlong(p.matrix)
   p.long2 <- getlong(p.matrix1)
+  p.long3 <- getlong(p.matrix2)
   p.long <- merge(p.long1,p.long2,by=c("pair1","pair2"))
   colnames(p.long)[3:4] <- c("P.val","logic")
-  p.long <- p.long[p.long[,"logic"] %in% T,]
+  p.long <- merge(p.long,p.long3,by=c("pair1","pair2"))
+  colnames(p.long)[4:5] <- c("logic","r")
+  p.long <- p.long[p.long[,"logic"] %in% T,] #筛选相关性显著的
   p.long <- p.long[p.long$pair1 != p.long$pair2,]#将自我比较的行去除
 
   ## get information about control.markers
-  p.long1 <- p.long[p.long$pair1 == control.markers,] #positive correlations between controls and targets
-  select = c(unique(as.character(p.long1$pair1)),
-             unique(as.character(p.long1$pair2)))
+  p.long <- p.long[p.long$pair1 == control.markers,] #correlations between controls and targets
+  select = c(unique(as.character(p.long$pair1)),
+             unique(as.character(p.long$pair2))) #选择这几个变量画相关性的图
 
   ## Use Fastcorrplot() to draw corrplot.
   cor.matrix <- Fastcorrplot(data=expr2,
@@ -118,6 +121,6 @@ Fastcorrplot2.1 <- function(data,
                              diag = output[[8]],
                              savefile=T,
                              names = paste0(names,"_",control.markers))
-  return(p.long)
+  return(p.long) #返回最终control和target相关性显著的互作对
 }
 
